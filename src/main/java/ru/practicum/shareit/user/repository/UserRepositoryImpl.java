@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
     private long idGenerator = 1;
     private HashMap<Long, User> users = new HashMap<>();
 
@@ -21,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository{
                 .stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList())
-                .contains(user.getEmail())){
+                .contains(user.getEmail())) {
             throw new EmailAlreadyExistException("Пользователь с таким email уже существует!");
         }
         user.setId(idGenerator);
@@ -52,7 +52,7 @@ public class UserRepositoryImpl implements UserRepository{
                 .filter(x -> x.getId() != id)
                 .map(User::getEmail)
                 .collect(Collectors.toList())
-                .contains(user.getEmail())){
+                .contains(user.getEmail())) {
             throw new EmailAlreadyExistException("Пользователь с таким email уже существует!");
         }
         if (user.getName() != null && !user.getName().isBlank()) {

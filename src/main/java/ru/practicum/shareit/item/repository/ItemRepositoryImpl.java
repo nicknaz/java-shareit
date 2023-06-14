@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.exception.NotFoundedException;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ItemRepositoryImpl implements ItemRepository{
+public class ItemRepositoryImpl implements ItemRepository {
     private long idGenerator = 1;
     private HashMap<Long, Item> items = new HashMap<>();
 
