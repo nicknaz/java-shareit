@@ -5,19 +5,19 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepositoryImpl;
-import ru.practicum.shareit.user.repository.UserRepositoryImpl;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
-    private ItemRepositoryImpl itemRepository;
-    private UserRepositoryImpl userRepository;
+    private ItemRepository itemRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public ItemServiceImpl(ItemRepositoryImpl itemRepository, UserRepositoryImpl userRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
     }
@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
                         .name(x.getName().toLowerCase())
                         .description(x.getDescription().toLowerCase())
                         .build())
-                .filter(x -> !text.isBlank() && (x.getName().contains(text.toLowerCase())
+                .filter(x -> (x.getName().contains(text.toLowerCase())
                         || x.getDescription().contains(text.toLowerCase())))
                 .map(x -> itemRepository.getById(x.getId()))
                 .map(ItemMapper::toItemDto)

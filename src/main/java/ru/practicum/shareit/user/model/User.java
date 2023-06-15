@@ -9,10 +9,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
