@@ -1,7 +1,33 @@
 package ru.practicum.shareit.item.model;
 
-/**
- * TODO Sprint add-controllers.
- */
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.model.User;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Item {
+    @NotNull
+    @PositiveOrZero
+    private long id;
+    @NotBlank
+    private String name;
+    @NotNull
+    @NotBlank
+    private String description;
+    @NotNull
+    private Boolean available;
+    @NotNull
+    private User owner;
+    private ItemRequest request;
+
 }
