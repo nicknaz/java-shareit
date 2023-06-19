@@ -153,9 +153,10 @@ public class ItemServiceImpl implements ItemService {
                 bookingRepository.findAllByBookerIdAndItemIdAndStatusNotAndStartBeforeOrderByStartDesc(userId,
                         itemId, BookingStatus.REJECTED, LocalDateTime.now());
 
-        if(bookingList.size() == 0)
+        if(bookingList.size() == 0) {
             throw new ValidationException("Вы не можете оставлять комментарии под этим предметом," +
                     " так как не бронировали ее");
+        }
 
         User user = userRepository.findById(userId).get();
         Item item = itemRepository.findById(itemId).get();

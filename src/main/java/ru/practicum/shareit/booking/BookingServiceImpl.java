@@ -43,15 +43,15 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundedException("Пользователь не найден"));
 
-        if(item.getOwner().getId() == bookerId) {
+        if (item.getOwner().getId() == bookerId) {
             throw new ConflictIdException("Бронь своего же предмета невозможна!");
         }
 
-        if(!item.getAvailable()) {
+        if (!item.getAvailable()) {
             throw new ValidationException("Предмет не доступен для бронирования!");
         }
 
-        if(bookingDto.getStart().isAfter(bookingDto.getEnd())
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())
             || bookingDto.getEnd().isBefore(bookingDto.getStart())
             || bookingDto.getEnd().isEqual(bookingDto.getStart())) {
             throw new InvalidDateException("Некорректно выставлена дата бронирования!");
@@ -70,11 +70,11 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(booking.getItem().getId())
                 .orElseThrow(() -> new NotFoundedException("Предмет не найден"));
 
-        if(item.getOwner().getId() != ownerId) {
+        if (item.getOwner().getId() != ownerId) {
             throw new NotFoundedException("Вы не являетесь владельцем предмета!");
         }
 
-        if(booking.getStatus() == BookingStatus.APPROVED) {
+        if (booking.getStatus() == BookingStatus.APPROVED) {
             throw new ValidationException("Бронь уже подтверждена!");
         }
 
@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundedException("Предмет не найден"));
 
 
-        if(item.getOwner().getId() != userId && booking.getBooker().getId() != userId) {
+        if (item.getOwner().getId() != userId && booking.getBooker().getId() != userId) {
             throw new NotFoundedException("Вы не являетесь владельцем предмета или создателем бронирования!");
         }
 
@@ -141,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundedException("Пользователь не найден"));
 
-        switch (state){
+        switch (state) {
             case ALL:
                 result = bookingRepository.findAllByOwnerIdOrderByStartDesc(ownerId);
                 break;

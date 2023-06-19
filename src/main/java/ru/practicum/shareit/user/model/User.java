@@ -15,10 +15,7 @@ import javax.validation.constraints.PositiveOrZero;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users", uniqueConstraints =
-        {
-                @UniqueConstraint(columnNames = "email")
-        })
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
     @PositiveOrZero
     @Id
