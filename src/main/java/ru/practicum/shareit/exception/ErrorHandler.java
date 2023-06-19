@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ValidationException;
 import java.util.Map;
@@ -27,11 +28,39 @@ public class ErrorHandler {
         return Map.of("exception", e.getMessage());
     }
 
+    @ExceptionHandler(ConflictIdException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> conflictIdException(final ConflictIdException e) {
+        log.debug("Получен статус 409 Conflict {}", e.getMessage(), e);
+        return Map.of("exception", e.getMessage());
+    }
+
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleException(final Exception e) {
         log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
         return Map.of("exception", e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> dateException(final Exception e) {
+        log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
+        return Map.of("exception", e.getMessage());
+    }
+
+    @ExceptionHandler(StatusUnsuportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> statusException(final Exception e) {
+        log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
+        return Map.of("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> statusUnsupportedException(final Exception e) {
+        log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS");
     }
 
     @ExceptionHandler(AccessException.class)

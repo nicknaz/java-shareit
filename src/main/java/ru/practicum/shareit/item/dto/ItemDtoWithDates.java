@@ -1,48 +1,37 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.request.ItemRequest;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "items")
-public class Item {
+public class ItemDtoWithDates {
     @NotNull
     @PositiveOrZero
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
     private long id;
-
     @NotBlank
-    @Column
     private String name;
-
     @NotNull
     @NotBlank
-    @Column
     private String description;
-
     @NotNull
-    @Column
     private Boolean available;
+    private ItemRequest request;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User owner;
+    private BookingDtoForItem lastBooking;
+    private BookingDtoForItem nextBooking;
 
-    //private ItemRequest request;
-
+    private List<Comment> comments;
 }
