@@ -163,4 +163,3 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.save(CommentMapper.toComment(commentDto, user, item));
     }
 }
-  
