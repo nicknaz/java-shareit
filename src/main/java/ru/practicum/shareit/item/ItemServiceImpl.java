@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
                                 .map(BookingMapper::toBookingDtoForItem)
                                 .findFirst().orElse(null),
                         bookingRepository
-                                .findAllByOwnerIdAndItemIdAndStartAfterOrderByStartDesc(ownerId,
+                                .findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(ownerId,
                                         x.getId(), LocalDateTime.now())
                                 .stream()
                                 .filter(k -> k.getStatus() == BookingStatus.APPROVED)
@@ -83,10 +83,10 @@ public class ItemServiceImpl implements ItemService {
 
         BookingDtoForItem next =
                 (userId == item.getOwner().getId()) ? bookingRepository
-                .findAllByOwnerIdAndItemIdAndStartAfterOrderByStartDesc(userId, itemId, LocalDateTime.now())
-                .stream()
-                .filter(x -> x.getStatus() == BookingStatus.APPROVED)
-                .map(BookingMapper::toBookingDtoForItem)
+                        .findAllByItemOwnerIdAndItemIdAndStartAfterOrderByStartDesc(userId, itemId, LocalDateTime.now())
+                        .stream()
+                        .filter(x -> x.getStatus() == BookingStatus.APPROVED)
+                        .map(BookingMapper::toBookingDtoForItem)
                         .reduce((a, b) -> b).orElse(null) : null;
 
         BookingDtoForItem last = (userId == item.getOwner().getId()) ? bookingRepository
@@ -163,3 +163,4 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.save(CommentMapper.toComment(commentDto, user, item));
     }
 }
+  

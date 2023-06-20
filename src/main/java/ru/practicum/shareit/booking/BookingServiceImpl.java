@@ -143,26 +143,26 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByOwnerIdOrderByStartDesc(ownerId);
+                result = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
                 break;
             case PAST:
-                result = bookingRepository.findAllByOwnerIdAndEndBeforeOrderByStartDesc(ownerId, date);
+                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, date);
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByOwnerIdAndStartAfterOrderByStartDesc(ownerId, date);
+                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, date);
                 break;
             case CURRENT:
-                result = bookingRepository.findAllByOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
-                        date);
+                result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
+                        date, date);
                 break;
             case WAITING:
-                result = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING);
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.REJECTED);
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.REJECTED);
                 break;
             default:
-                throw new ValidationException("Unknown state: " + state);
+                throw new ValidationException("Unknown state: " + state); //comment in git
         }
 
         return result.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
