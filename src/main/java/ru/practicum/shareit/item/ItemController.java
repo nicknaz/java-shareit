@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-
+import ru.practicum.shareit.item.dto.ItemDtoWithDates;
+import ru.practicum.shareit.item.model.Comment;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -31,15 +33,16 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllByOwner(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoWithDates> getAllByOwner(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
         log.info("Get item by owner with userId={}", userId);
         return itemService.getAllByOwner(userId);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getById(@PathVariable("id") Long itemId) {
+    public ItemDtoWithDates getById(@RequestHeader(name = "X-Sharer-User-Id") Long userId,
+                                    @PathVariable("id") Long itemId) {
         log.info("Get item by itemId={}", itemId);
-        return itemService.getById(itemId);
+        return itemService.getById(userId, itemId);
     }
 
     @PatchMapping("/{id}")
@@ -64,5 +67,14 @@ public class ItemController {
             return Collections.emptyList();
         }
         return itemService.search(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public Comment createComment(@RequestHeader(name = "X-Sharer-User-Id") Long userId,
+                             @PathVariable("itemId") Long itemId,
+                             @Valid @RequestBody CommentDto comment) {
+        Comment newComment = itemService.createComment(userId, itemId, comment);
+        log.info("Create comment by userId={} for itemId = {}", userId, itemId);
+        return newComment;
     }
 }
