@@ -149,8 +149,9 @@ public class ItemServiceImplTest {
     @Test
     public void testUpdateAccessDenied() {
         Long itemId = 1L;
-        Long otherOwnerId = 200L;
+
         User owner = createUser();
+        User other = createUser();
 
         createItem(owner);
 
@@ -159,7 +160,7 @@ public class ItemServiceImplTest {
         itemDto.setDescription("Updated Item description");
         itemDto.setAvailable(false);
 
-        assertThrows(NotFoundedException.class, () -> itemService.update(itemId, itemDto, otherOwnerId));
+        assertThrows(NotFoundedException.class, () -> itemService.update(itemId, itemDto, other.getId()));
     }
 
     @Test
