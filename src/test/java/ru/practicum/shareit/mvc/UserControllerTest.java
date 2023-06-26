@@ -38,11 +38,16 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        userDto = new UserDto(1L, "user", "user@user.com");
+        userDto = UserDto
+                .builder()
+                .id(1L)
+                .name("name")
+                .email("email@gmail.com")
+                .build();
     }
 
     @Test
-    void shouldCreateUser() throws Exception {
+    void testCreateUser() throws Exception {
         when(userService.add(any())).thenReturn(userDto);
 
         String jsonUser = objectMapper.writeValueAsString(userDto);
@@ -52,23 +57,23 @@ class UserControllerTest {
                 .content(jsonUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value("user@user.com"))
-                .andExpect(jsonPath("$.name").value("user"));
+                .andExpect(jsonPath("$.email").value("email@gmail.com"))
+                .andExpect(jsonPath("$.name").value("name"));
     }
 
     @Test
-    void shouldGetUserById() throws Exception {
+    void testGetUserById() throws Exception {
         when(userService.getById(any())).thenReturn(userDto);
 
         mockMvc.perform(get("/users/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value("user@user.com"))
-                .andExpect(jsonPath("$.name").value("user"));
+                .andExpect(jsonPath("$.email").value("email@gmail.com"))
+                .andExpect(jsonPath("$.name").value("name"));
     }
 
     @Test
-    void shouldGetAllUsers() throws Exception {
+    void testGetAllUsers() throws Exception {
         when(userService.getAll()).thenReturn(List.of(userDto, userDto, userDto));
 
         mockMvc.perform(get("/users"))
@@ -80,8 +85,8 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturnClientErrorWhenAddingUserWithEmptyName() throws Exception {
-        UserDto user = new UserDto(2L, "", "user@user.com");
+    void testReturnClientErrorWhenAddingUserWithEmptyName() throws Exception {
+        UserDto user = new UserDto(2L, "", "email2@gmail.com");
         String jsonUser = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users")
@@ -91,7 +96,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturnClientErrorWhenAddingUserWithEmptyEmail() throws Exception {
+    void testReturnClientErrorWhenAddingUserWithEmptyEmail() throws Exception {
         UserDto user = new UserDto(2L, "user", "");
         String jsonUser = objectMapper.writeValueAsString(user);
 
@@ -102,8 +107,8 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldUpdateUserWithPatchWhenStatusIs200() throws Exception {
-        UserDto updatedUser = new UserDto(1L, "update", "update@user.com");
+    void testUpdateUserWithPatchWhenStatusIs200() throws Exception {
+        UserDto updatedUser = new UserDto(1L, "nameUpd", "emailUpd@gmail.com");
         String jsonUser = objectMapper.writeValueAsString(updatedUser);
 
         when(userService.update(anyLong(), any())).thenReturn(updatedUser);
@@ -113,13 +118,13 @@ class UserControllerTest {
                 .content(jsonUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value("update@user.com"))
-                .andExpect(jsonPath("$.name").value("update"));
+                .andExpect(jsonPath("$.email").value("emailUpd@gmail.com"))
+                .andExpect(jsonPath("$.name").value("nameUpd"));
     }
 
     @Test
-    void shouldUpdateUserNameWithPatch() throws Exception {
-        String jsonUser = "{\"name\":\"updateName\"}";
+    void testUpdateUserNameWithPatch() throws Exception {
+        String jsonUser = "{\"name\":\"updName\"}";
 
         when(userService.update(anyLong(), any())).thenReturn(userDto);
 
@@ -130,8 +135,8 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldUpdateUserEmailWithPatch() throws Exception {
-        String jsonUser = "{\"email\":\"updateName@user.com\"}";
+    void testUpdateUserEmailWithPatch() throws Exception {
+        String jsonUser = "{\"email\":\"updName@user.com\"}";
 
         when(userService.update(anyLong(), any())).thenReturn(userDto);
 
@@ -142,7 +147,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldDeleteUser() throws Exception {
+    void testDeleteUser() throws Exception {
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
     }

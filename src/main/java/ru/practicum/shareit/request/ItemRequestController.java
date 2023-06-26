@@ -27,20 +27,22 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ItemRequestDtoForResponse create(@RequestHeader(name = "X-Sharer-User-Id") Long userId,
+    public ItemRequestDtoForResponse create(@RequestHeader(name = "X-Sharer-User-Id") @PositiveOrZero Long userId,
                                             @Valid @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Create request by userId={}", userId);
         return itemRequestService.create(itemRequestDto, userId);
     }
 
     @GetMapping
-    public List<ItemRequestDtoForResponse> getForUser(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDtoForResponse> getForUser(@RequestHeader(name = "X-Sharer-User-Id")
+                                                          @PositiveOrZero Long userId) {
         log.info("Get requests by userId={}", userId);
         return itemRequestService.getForUser(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDtoForResponse> getOtherUsers(@RequestHeader(name = "X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDtoForResponse> getOtherUsers(@RequestHeader(name = "X-Sharer-User-Id")
+                                                      @PositiveOrZero Long userId,
                                                       @RequestParam(name = "from", defaultValue = "0")
                                                       @PositiveOrZero Integer from,
                                                       @RequestParam(name = "size", defaultValue = "10")
@@ -50,7 +52,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDtoForResponse getRequestById(@RequestHeader(name = "X-Sharer-User-Id") Long userId,
+    public ItemRequestDtoForResponse getRequestById(@RequestHeader(name = "X-Sharer-User-Id")
+                                                 @PositiveOrZero Long userId,
                                                  @PathVariable(name = "requestId") Long requestId) {
         log.info("Get request by requestId={}", requestId);
         return itemRequestService.getRequestById(userId, requestId);
