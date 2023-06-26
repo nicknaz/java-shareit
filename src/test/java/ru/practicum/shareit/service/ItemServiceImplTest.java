@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
+import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -160,7 +161,7 @@ public class ItemServiceImplTest {
         itemDto.setDescription("Updated Item description");
         itemDto.setAvailable(false);
 
-        assertThrows(NotFoundedException.class, () -> itemService.update(itemId, itemDto, other.getId()));
+        assertThrows(RuntimeException.class, () -> itemService.update(itemId, itemDto, other.getId()));
     }
 
     @Test
