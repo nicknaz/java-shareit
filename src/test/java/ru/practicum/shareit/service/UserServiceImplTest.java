@@ -82,7 +82,7 @@ class UserServiceImplTest {
 
     @Test
     public void testGetByIdNotFound() {
-        assertThrows(NotFoundedException.class, () -> userService.getById(1234L)) ;
+        assertThrows(NotFoundedException.class, () -> userService.getById(1234L));
     }
 
     @Test

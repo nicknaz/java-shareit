@@ -52,7 +52,7 @@ public class ItemServiceImplMokTest {
 
         Mockito.when(itemRepository.findById(anyLong())).thenAnswer(invocationOnMock -> {
             Long id = invocationOnMock.getArgument(0, Long.class);
-            return Optional.of(itemList.get((Math.toIntExact(id-1))));
+            return Optional.of(itemList.get((Math.toIntExact(id - 1))));
         });
 
         assertEquals(itemService.search("ex").size(), 2);

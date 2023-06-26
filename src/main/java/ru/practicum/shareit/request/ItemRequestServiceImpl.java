@@ -52,7 +52,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDtoForResponse> getOtherUsers(Long userId, Integer from, Integer size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundedException("Пользователь не найден"));
-        return requestRepository.findAllByRequestorIsNotOrderByCreatedDateDesc(user, PageRequest.of(from/size, size))
+        return requestRepository.findAllByRequestorIsNotOrderByCreatedDateDesc(user, PageRequest.of(from / size, size))
                 .stream()
                 .map(x -> (ItemRequestMapper.toItemRequestResponseDto(x, getListItem(x.getId()))))
                 .collect(Collectors.toList());

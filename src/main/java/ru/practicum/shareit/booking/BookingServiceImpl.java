@@ -110,25 +110,25 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId, PageRequest.of(from / size, size));
                 break;
             case PAST:
-                result = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId, date, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId, date, PageRequest.of(from / size, size));
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(bookerId, date, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(bookerId, date, PageRequest.of(from / size, size));
                 break;
             case CURRENT:
                 result = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
                                                                                                         date,
                                                                                                         date,
-                                                                                PageRequest.of(from/size, size));
+                                                                                PageRequest.of(from / size, size));
                 break;
             case WAITING:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.WAITING, PageRequest.of(from / size, size));
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(bookerId, BookingStatus.REJECTED, PageRequest.of(from / size, size));
                 break;
             default:
                 return null;
@@ -146,23 +146,23 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId, PageRequest.of(from / size, size));
                 break;
             case PAST:
-                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, date, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, date, PageRequest.of(from / size, size));
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, date, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, date, PageRequest.of(from / size, size));
                 break;
             case CURRENT:
                 result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
                         date, date, PageRequest.of(from/size, size));
                 break;
             case WAITING:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING, PageRequest.of(from / size, size));
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.REJECTED, PageRequest.of(from/size, size));
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.REJECTED, PageRequest.of(from / size, size));
                 break;
             default:
                 return null;
