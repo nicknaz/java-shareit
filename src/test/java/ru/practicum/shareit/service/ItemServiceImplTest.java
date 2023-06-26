@@ -110,7 +110,7 @@ public class ItemServiceImplTest {
         Long userId = 1L;
         Long itemId = 1L;
 
-        assertThrows(NotFoundedException.class, () -> itemService.getById(userId, itemId)) ;
+        assertThrows(NotFoundedException.class, () -> itemService.getById(userId, itemId));
     }
 
     @Test

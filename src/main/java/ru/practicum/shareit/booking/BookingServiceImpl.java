@@ -156,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case CURRENT:
                 result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
-                        date, date, PageRequest.of(from/size, size));
+                        date, date, PageRequest.of(from / size, size));
                 break;
             case WAITING:
                 result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, BookingStatus.WAITING, PageRequest.of(from / size, size));
