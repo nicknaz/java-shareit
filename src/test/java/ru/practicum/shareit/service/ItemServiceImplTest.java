@@ -63,15 +63,13 @@ public class ItemServiceImplTest {
         itemDto.setName("Item 1");
         itemDto.setDescription("Item 1 description");
         itemDto.setAvailable(true);
-        Long ownerId = 1L;
 
         User owner = new User();
-        owner.setId(ownerId);
         owner.setEmail("email_bob@gmail.com");
         owner.setName("Sponge Bob");
-        userRepository.save(owner);
+        owner = userRepository.save(owner);
 
-        ItemDto result = itemService.add(itemDto, ownerId);
+        ItemDto result = itemService.add(itemDto, owner.getId());
 
         assertNotNull(result.getId());
         assertEquals("Item 1", result.getName());
