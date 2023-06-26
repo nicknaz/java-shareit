@@ -2,14 +2,19 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.exception.StatusUnsuportedException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
+@Validated
 @Slf4j
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -45,16 +50,39 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllByBooker(@RequestHeader(name = "X-Sharer-User-Id") Long bookerId,
-                                            @RequestParam(required = false) State state) {
-        List<BookingDto> result = bookingService.findAllByBooker(bookerId, state != null ? state : State.ALL);
-        log.info("Get all booking by bookerId={}", bookerId);
+                                            @RequestParam(required = false, defaultValue = "ALL") String state,
+                                            @RequestParam(name = "from", defaultValue = "0")
+                                            @PositiveOrZero Integer from,
+                                            @RequestParam(name = "size", defaultValue = "10")
+                                            @Positive Integer size) {
+        List<BookingDto> result;
+        try {
+            result = bookingService.findAllByBooker(bookerId, Enum.valueOf(State.class, state), from, size);
+        } catch (IllegalArgumentException e) {
+            throw new StatusUnsuportedException();
+        }
+        /*
+        * Всё равно не совсем понял, зачем я дополнительную проверку делаю, если до этого исключение выбрасывалось
+        * когда в сигнатуре метода был каст из string в state(потому что в запросе state представлен как строка)
+        * А это исключение обрабатывалось в ErrorHandler.java
+        */
+        log.info("Get all booking by bookerId={} page ={}", bookerId, from);
         return result;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwner(@RequestHeader(name = "X-Sharer-User-Id") Long ownerId,
-                                            @RequestParam(required = false, defaultValue = "ALL") State state) {
-        List<BookingDto> result = bookingService.findAllByOwner(ownerId, state);
+                                            @RequestParam(required = false, defaultValue = "ALL") String state,
+                                           @RequestParam(name = "from", defaultValue = "0")
+                                           @PositiveOrZero Integer from,
+                                           @RequestParam(name = "size", defaultValue = "10")
+                                           @Positive Integer size) {
+        List<BookingDto> result;
+        try {
+            result = bookingService.findAllByOwner(ownerId, Enum.valueOf(State.class, state), from, size);
+        } catch (IllegalArgumentException e) {
+            throw new StatusUnsuportedException();
+        }
         log.info("Get all booking by ownerId={}", ownerId);
         return result;
     }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -43,6 +44,8 @@ public class Item {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User owner;
 
-    //private ItemRequest request;
+    @ManyToOne
+    @JoinColumn(name = "request_id", referencedColumnName = "request_id")
+    private ItemRequest request;
 
 }

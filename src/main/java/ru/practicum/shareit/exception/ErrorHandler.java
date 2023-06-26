@@ -53,7 +53,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> statusException(final Exception e) {
         log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
-        return Map.of("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
