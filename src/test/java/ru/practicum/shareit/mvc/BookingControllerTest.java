@@ -164,8 +164,4 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[1].booker").exists())
                 .andExpect(jsonPath("$[1].status").value("APPROVED"));
     }
-    
-    
-
-
 }
