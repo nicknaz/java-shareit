@@ -52,7 +52,6 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd())
-            || bookingDto.getEnd().isBefore(bookingDto.getStart())
             || bookingDto.getEnd().isEqual(bookingDto.getStart())) {
             throw new InvalidDateException("Некорректно выставлена дата бронирования!");
         }

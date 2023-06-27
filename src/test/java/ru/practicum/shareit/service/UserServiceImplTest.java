@@ -105,6 +105,66 @@ class UserServiceImplTest {
     }
 
     @Test
+    public void testUpdateWithoutName() {
+        UserDto userDto = new UserDto();
+        userDto.setName("John");
+        userDto.setEmail("john@example.com");
+        UserDto savedUser = userService.add(userDto);
+
+        UserDto updatedUserDto = new UserDto();
+        updatedUserDto.setName(null);
+        updatedUserDto.setEmail("updatedjohn@example.com");
+
+        UserDto result = userService.update(savedUser.getId(), updatedUserDto);
+
+        assertNotNull(result);
+        assertEquals(savedUser.getId(), result.getId());
+        assertEquals("John", result.getName());
+        assertEquals("updatedjohn@example.com", result.getEmail());
+
+        updatedUserDto = new UserDto();
+        updatedUserDto.setName("");
+        updatedUserDto.setEmail("updatedjohn2@example.com");
+
+        result = userService.update(savedUser.getId(), updatedUserDto);
+
+        assertNotNull(result);
+        assertEquals(savedUser.getId(), result.getId());
+        assertEquals("John", result.getName());
+        assertEquals("updatedjohn2@example.com", result.getEmail());
+    }
+
+    @Test
+    public void testUpdateWithoutEmail() {
+        UserDto userDto = new UserDto();
+        userDto.setName("John");
+        userDto.setEmail("john@example.com");
+        UserDto savedUser = userService.add(userDto);
+
+        UserDto updatedUserDto = new UserDto();
+        updatedUserDto.setName("Bob");
+        updatedUserDto.setEmail(null);
+
+        UserDto result = userService.update(savedUser.getId(), updatedUserDto);
+
+        assertNotNull(result);
+        assertEquals(savedUser.getId(), result.getId());
+        assertEquals("Bob", result.getName());
+        assertEquals("john@example.com", result.getEmail());
+
+        updatedUserDto = new UserDto();
+        updatedUserDto.setName("Bob2");
+        updatedUserDto.setEmail("");
+
+        result = userService.update(savedUser.getId(), updatedUserDto);
+
+        assertNotNull(result);
+        assertEquals(savedUser.getId(), result.getId());
+        assertEquals("Bob2", result.getName());
+        assertEquals("john@example.com", result.getEmail());
+    }
+
+    @Test
     public void testUpdateNotFound() {
         UserDto userDto = new UserDto();
         userDto.setName("John");

@@ -106,6 +106,16 @@ class BookingServiceImplTest {
     }
 
     @Test
+    public void testThrowInvalidDateEquals() {
+        User user = createUser();
+        User booker = createUser();
+        Item item = createItem(user);
+        LocalDateTime startAndEnd = LocalDateTime.now();
+        BookingDtoRequest bookingDtoRequest = createBookingDtoRequest(item, startAndEnd, startAndEnd);
+        assertThrows(InvalidDateException.class, () -> bookingService.create(bookingDtoRequest, booker.getId()));
+    }
+
+    @Test
     public void testChangeStatusToApproved() {
         User user = createUser();
         User booker = createUser();
@@ -131,6 +141,32 @@ class BookingServiceImplTest {
         bookingService.changeStatus(user.getId(), bookingDto.getId(), false);
 
         assertEquals(bookingRepository.findById(bookingDto.getId()).get().getStatus(), BookingStatus.REJECTED);
+    }
+
+    @Test
+    public void testChangeStatusThrowNotOwner() {
+        User user = createUser();
+        User booker = createUser();
+        Item item = createItem(user);
+        BookingDtoRequest bookingDtoRequest = createBookingDtoRequest(item, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+
+        BookingDto bookingDto = bookingService.create(bookingDtoRequest, booker.getId());
+
+        assertThrows(NotFoundedException.class,() -> bookingService.changeStatus(booker.getId(), bookingDto.getId(), true));
+    }
+
+    @Test
+    public void testChangeStatusThrowAllredyApprove() {
+        User user = createUser();
+        User booker = createUser();
+        Item item = createItem(user);
+        BookingDtoRequest bookingDtoRequest = createBookingDtoRequest(item, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+
+        BookingDto bookingDto = bookingService.create(bookingDtoRequest, booker.getId());
+
+        bookingService.changeStatus(user.getId(), bookingDto.getId(), true);
+
+        assertThrows(ValidationException.class,() -> bookingService.changeStatus(user.getId(), bookingDto.getId(), true));
     }
 
     @Test
