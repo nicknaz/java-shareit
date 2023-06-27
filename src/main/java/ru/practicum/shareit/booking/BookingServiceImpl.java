@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
-import ru.practicum.shareit.exception.ConflictIdException;
 import ru.practicum.shareit.exception.InvalidDateException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.model.Item;
@@ -45,7 +44,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundedException("Пользователь не найден"));
 
         if (item.getOwner().getId() == bookerId) {
-            throw new ConflictIdException("Бронь своего же предмета невозможна!");
+            throw new NotFoundedException("Бронь своего же предмета невозможна!");
         }
 
         if (!item.getAvailable()) {

@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
-import ru.practicum.shareit.exception.StatusUnsuportedException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -59,7 +58,7 @@ public class BookingController {
         try {
             result = bookingService.findAllByBooker(bookerId, Enum.valueOf(State.class, state), from, size);
         } catch (IllegalArgumentException e) {
-            throw new StatusUnsuportedException();
+            throw new IllegalArgumentException("Неизвестный state");
         }
         /*
         * Всё равно не совсем понял, зачем я дополнительную проверку делаю, если до этого исключение выбрасывалось
@@ -81,7 +80,7 @@ public class BookingController {
         try {
             result = bookingService.findAllByOwner(ownerId, Enum.valueOf(State.class, state), from, size);
         } catch (IllegalArgumentException e) {
-            throw new StatusUnsuportedException();
+            throw new IllegalArgumentException("Неизвестный state");
         }
         log.info("Get all booking by ownerId={}", ownerId);
         return result;

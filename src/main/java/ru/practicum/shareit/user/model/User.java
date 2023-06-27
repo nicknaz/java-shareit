@@ -9,7 +9,6 @@ import javax.validation.constraints.PositiveOrZero;
 
 @Setter
 @Getter
-@ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor

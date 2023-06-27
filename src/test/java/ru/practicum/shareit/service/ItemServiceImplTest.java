@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
 import ru.practicum.shareit.exception.NotFoundedException;
@@ -80,15 +83,30 @@ public class ItemServiceImplTest {
     @Test
     public void testGetAllByOwner() {
         User owner = createUser();
+        User booker = createUser();
 
         Item item1 = createItem(owner);
         Item item2 = createItem(owner);
 
+        LocalDateTime start = LocalDateTime.now().plusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(3);
+
+        Booking booking = createBookingDtoRequest(item1, booker, start, end);
+
         List<ItemDtoWithDates> result = itemService.getAllByOwner(owner.getId());
+
+        BookingDtoForItem bookingDtoForItem = result.get(0).getNextBooking();
 
         assertEquals(2, result.size());
         assertEquals(item1.getId(), result.get(0).getId());
         assertEquals(item2.getId(), result.get(1).getId());
+
+        assertEquals(bookingDtoForItem.getId(), 1);
+        assertEquals(bookingDtoForItem.getStart(), start);
+        assertEquals(bookingDtoForItem.getEnd(), end);
+        assertEquals(bookingDtoForItem.getStatus(), BookingStatus.APPROVED);
+        assertEquals(bookingDtoForItem.getBookerId(), booker.getId());
+        assertEquals(bookingDtoForItem.getItem(), item1);
     }
 
     @Test
@@ -218,12 +236,12 @@ public class ItemServiceImplTest {
                         .build(), user.getId());
 
         CommentDto commentDto = new CommentDto();
-        commentDto.setText("Great item!");
+        commentDto.setText("comm");
 
         Comment result = itemService.createComment(user.getId(), item.getId(), commentDto);
 
         assertNotNull(result.getId());
-        assertEquals("Great item!", result.getText());
+        assertEquals("comm", result.getText());
         assertEquals(userRepository.findById(user.getId()).get().getName(), result.getAuthorName());
         assertEquals(item.getId(), result.getItem().getId());
     }
@@ -242,5 +260,14 @@ public class ItemServiceImplTest {
         item.setAvailable(true);
         item.setOwner(owner);
         return itemRepository.save(item);
+    }
+
+    private Booking createBookingDtoRequest(Item item, User booker, LocalDateTime start, LocalDateTime end) {
+        return bookingRepository.save(BookingMapper.toBooking(BookingDtoRequest.builder()
+                .itemId(item.getId())
+                .start(start)
+                .end(end)
+                .status(BookingStatus.APPROVED)
+                .build(), item, booker));
     }
 }

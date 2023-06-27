@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
-import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -116,7 +115,7 @@ public class ItemServiceImpl implements ItemService {
         Item updItem = itemRepository.findById(id).orElseThrow(() -> new NotFoundedException("Предмет не найден"));
 
         if (updItem.getOwner().getId() != ownerId) {
-            throw new AccessException("Вы не можете изменить эту вещь, так как не вы её владелец!");
+            throw new NotFoundedException("Вы не можете изменить эту вещь, так как не вы её владелец!");
         }
 
         if (item.getName() != null && !item.getName().isBlank()) {

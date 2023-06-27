@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundedException;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemDtoForRequest;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepositoryJPA;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
@@ -17,6 +20,7 @@ import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,8 +103,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     public void testGetRequestById() {
-        Long requestId = 1L;
-
         User user = User.builder()
                 .email("email@gmail.com")
                 .name("Name")
@@ -109,10 +111,45 @@ class ItemRequestServiceImplTest {
 
         ItemRequest itemRequest = createItemRequest(user);
 
-        ItemRequestDtoForResponse result = itemRequestService.getRequestById(user.getId(), requestId);
+        ItemRequestDtoForResponse result = itemRequestService.getRequestById(user.getId(), itemRequest.getId());
 
         assertNotNull(result);
-        assertEquals(requestId, result.getId());
+        assertEquals(itemRequest.getId(), result.getId());
+        assertEquals(itemRequest.getRequestor(), user);
+    }
+
+    @Test
+    public void testGetListItem(){
+        User owner = new User();
+        owner.setEmail("email@gmail.com");
+        owner.setName("name" );
+        owner = userRepository.save(owner);
+
+        User user = new User();
+        user.setEmail("email2@gmail.com");
+        user.setName("name");
+        user = userRepository.save(user);
+
+        Item item = new Item();
+        item.setName("Item");
+        item.setDescription("Item description");
+        item.setAvailable(true);
+        item.setOwner(owner);
+        ItemRequest request = createItemRequest(user);
+        item.setRequest(request);
+        item = itemRepository.save(item);
+
+        List<ItemDtoForRequest> items = itemRepository.findAllByRequestId(request.getId())
+                .stream()
+                .map(x -> (ItemMapper.toItemDtoForReques(x)))
+                .collect(Collectors.toList());
+
+        assertEquals(items.size(), 1);
+
+        ItemDtoForRequest itemDtoForRequest = items.get(0);
+        assertEquals(itemDtoForRequest.getId(), 1);
+        assertEquals(itemDtoForRequest.getAvailable(), true);
+        assertEquals(itemDtoForRequest.getOwnerId(), owner.getId());
     }
 
     @Test

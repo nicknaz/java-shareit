@@ -7,8 +7,6 @@ import javax.validation.constraints.Size;
 
 @Setter
 @Getter
-@ToString
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

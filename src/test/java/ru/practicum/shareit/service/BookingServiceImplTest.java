@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
-import ru.practicum.shareit.exception.ConflictIdException;
 import ru.practicum.shareit.exception.InvalidDateException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.model.Item;
@@ -84,7 +83,7 @@ class BookingServiceImplTest {
         User user = createUser();
         Item item = createItem(user);
         BookingDtoRequest bookingDtoRequest = createBookingDtoRequest(item, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
-        assertThrows(ConflictIdException.class, () -> bookingService.create(bookingDtoRequest, user.getId()));
+        assertThrows(NotFoundedException.class, () -> bookingService.create(bookingDtoRequest, user.getId()));
     }
 
     @Test
