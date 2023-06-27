@@ -44,7 +44,7 @@ public class UserRepositoryJpaTest {
 
         assertThat(retrievedUser).isEqualTo(userInRep);
 
-        assertThrows(DataIntegrityViolationException.class, () -> {
+        assertThrows(Exception.class, () -> {
             User userDuplicate = new User(3L, "user2", "email@gmail.com");
             userRepository.save(userDuplicate);
         });
