@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 public class UserRepositoryJpaTest {
