@@ -119,10 +119,10 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    public void testGetListItem(){
+    public void testGetListItem() {
         User owner = new User();
         owner.setEmail("email@gmail.com");
-        owner.setName("name" );
+        owner.setName("name");
         owner = userRepository.save(owner);
 
         User user = new User();
