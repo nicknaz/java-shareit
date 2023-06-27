@@ -7,11 +7,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import ru.practicum.shareit.booking.BookingController;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -19,9 +22,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -163,5 +169,95 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[1].end").exists())
                 .andExpect(jsonPath("$[1].booker").exists())
                 .andExpect(jsonPath("$[1].status").value("APPROVED"));
+    }
+
+    @Test
+    public void shouldBookingsUpdateWithApprovedFalse() throws Exception {
+        Integer bookingId = 1;
+        Integer userId = 1;
+
+        User booker = new User(1L, "booker", "booker@gmail.com");
+
+        User owner = new User(2L, "owner", "owner@gmail.com");
+
+        Item item = new Item(1L, "item", "description", true, owner, null);
+
+        LocalDateTime start = LocalDateTime.now().plusMinutes(1).withNano(000);
+        LocalDateTime end = start.plusDays(1).withNano(000);
+
+        BookingDto bookingDto =  BookingDto.builder().booker(booker).end(end)
+                .start(start).item(item).status(BookingStatus.REJECTED).build();
+
+        BookingDtoRequest bookingResponseDto = BookingDtoRequest
+                .builder()
+                .id(bookingDto.getId())
+                .status(BookingStatus.WAITING)
+                .start(bookingDto.getStart())
+                .end(bookingDto.getEnd())
+                .itemId(item.getId())
+                .build();
+
+        bookingResponseDto.setStatus(BookingStatus.REJECTED);
+
+        when(bookingService.changeStatus(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
+
+        mockMvc.perform(patch("/bookings/{bookingId}?approved=false", bookingId)
+                .header("X-Sharer-User-Id", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("REJECTED"));
+
+    }
+
+    @Test
+    public void shouldBookingsAllReservationOwner() throws Exception {
+        Integer userId = 2;
+
+        User booker = new User(1L, "booker", "booker@gmail.com");
+
+        User owner = new User(2L, "owner", "owner@gmail.com");
+
+        Item item = new Item(1L, "item", "description", true, owner, null);
+
+        LocalDateTime start = LocalDateTime.now().plusMinutes(1).withNano(000);
+        LocalDateTime end = start.plusDays(1).withNano(000);
+
+        BookingDto bookingDto =  BookingDto.builder().booker(booker).end(end).start(start).item(item).build();
+
+        BookingDtoRequest bookingResponseDto = BookingDtoRequest
+                .builder()
+                .id(bookingDto.getId())
+                .status(BookingStatus.WAITING)
+                .start(bookingDto.getStart())
+                .end(bookingDto.getEnd())
+                .itemId(item.getId())
+                .build();
+
+        when(bookingService.findAllByBooker(anyLong(), any(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto, bookingDto));
+
+        mockMvc.perform(get("/bookings/owner")
+                .header("X-Sharer-User-Id", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void shouldBookingsWithoutSizeMinus() throws Exception {
+        Integer bookingId = 1;
+        Integer userId = 1;
+
+        mockMvc.perform(get("/bookings/owner?size=-1&from=0", bookingId)
+                .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void shouldBookingsWithoutFromMinus() throws Exception {
+        Integer bookingId = 1;
+        Integer userId = 1;
+
+        mockMvc.perform(get("/bookings/owner?size=10&from=-1", bookingId)
+                .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
     }
 }
