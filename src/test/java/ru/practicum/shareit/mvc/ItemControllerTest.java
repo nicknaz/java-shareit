@@ -1,6 +1,7 @@
 package ru.practicum.shareit.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,20 +37,28 @@ class ItemControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    public void testCreateItem() throws Exception {
-        ItemDto itemDto = new ItemDto();
+    private ItemDto itemDto;
+
+    private ItemDto createdItemDto;
+
+    @BeforeEach
+    void setUp() {
+        itemDto = new ItemDto();
         itemDto.setName("Item");
         itemDto.setDescription("Description");
         itemDto.setAvailable(true);
         itemDto.setRequestId(1L);
 
-        ItemDto createdItemDto = new ItemDto();
+        createdItemDto = new ItemDto();
         createdItemDto.setId(1L);
         createdItemDto.setName("Item");
         createdItemDto.setDescription("Description");
         createdItemDto.setAvailable(true);
         createdItemDto.setRequestId(1L);
+    }
+
+    @Test
+    public void testCreateItem() throws Exception {
 
         Mockito.when(itemService.add(Mockito.any(ItemDto.class), anyLong())).thenReturn(createdItemDto);
 
@@ -107,21 +116,13 @@ class ItemControllerTest {
 
     @Test
     public void testUpdateItem() throws Exception {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
         itemDto.setName("Updated Item");
         itemDto.setDescription("Updated Description");
-        itemDto.setAvailable(true);
-        itemDto.setRequestId(1L);
 
-        ItemDto updatedItemDto = new ItemDto();
-        updatedItemDto.setId(1L);
-        updatedItemDto.setName("Updated Item");
-        updatedItemDto.setDescription("Updated Description");
-        updatedItemDto.setAvailable(true);
-        updatedItemDto.setRequestId(1L);
+        createdItemDto.setName("Updated Item");
+        createdItemDto.setDescription("Updated Description");
 
-        Mockito.when(itemService.update(anyLong(), any(), anyLong())).thenReturn(updatedItemDto);
+        Mockito.when(itemService.update(anyLong(), any(), anyLong())).thenReturn(createdItemDto);
 
         mockMvc.perform(patch("/items/{id}", 1L)
                 .header("X-Sharer-User-Id", 1L)

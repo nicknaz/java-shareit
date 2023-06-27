@@ -49,39 +49,38 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllByBooker(@RequestHeader(name = "X-Sharer-User-Id") Long bookerId,
-                                            @RequestParam(required = false, defaultValue = "ALL") String state,
+                                            @RequestParam(defaultValue = "ALL") String state,
                                             @RequestParam(name = "from", defaultValue = "0")
                                             @PositiveOrZero Integer from,
                                             @RequestParam(name = "size", defaultValue = "10")
                                             @Positive Integer size) {
         List<BookingDto> result;
+        State stateFromString;
         try {
-            result = bookingService.findAllByBooker(bookerId, Enum.valueOf(State.class, state), from, size);
+            stateFromString = Enum.valueOf(State.class, state);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Неизвестный state");
         }
-        /*
-        * Всё равно не совсем понял, зачем я дополнительную проверку делаю, если до этого исключение выбрасывалось
-        * когда в сигнатуре метода был каст из string в state(потому что в запросе state представлен как строка)
-        * А это исключение обрабатывалось в ErrorHandler.java
-        */
+        result = bookingService.findAllByBooker(bookerId, stateFromString, from, size);
         log.info("Get all booking by bookerId={} page ={}", bookerId, from);
         return result;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwner(@RequestHeader(name = "X-Sharer-User-Id") Long ownerId,
-                                            @RequestParam(required = false, defaultValue = "ALL") String state,
+                                            @RequestParam(defaultValue = "ALL") String state,
                                            @RequestParam(name = "from", defaultValue = "0")
                                            @PositiveOrZero Integer from,
                                            @RequestParam(name = "size", defaultValue = "10")
                                            @Positive Integer size) {
         List<BookingDto> result;
+        State stateFromString;
         try {
-            result = bookingService.findAllByOwner(ownerId, Enum.valueOf(State.class, state), from, size);
+            stateFromString = Enum.valueOf(State.class, state);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Неизвестный state");
         }
+        result = bookingService.findAllByOwner(ownerId, stateFromString, from, size);
         log.info("Get all booking by ownerId={}", ownerId);
         return result;
     }

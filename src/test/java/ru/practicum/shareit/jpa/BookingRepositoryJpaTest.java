@@ -1,8 +1,10 @@
 package ru.practicum.shareit.jpa;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
@@ -19,14 +21,33 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
 public class BookingRepositoryJpaTest {
 
-    //@Autowired
-    //private TestEntityManager entityManager;
+    @Autowired
+    private TestEntityManager entityManager;
     @Autowired
     private BookingRepositoryJPA bookingRepositoryJPA;
     @Autowired
     private ItemRepositoryJPA itemRepositoryJPA;
     @Autowired
     private UserRepositoryJPA userRepositoryJPA;
+
+    @Test
+    void testItemSaved() throws Exception {
+        LocalDateTime time = LocalDateTime.now();
+
+        User user = new User(1L, "user1", "email1@gmail.com");
+        User userInRep = userRepositoryJPA.save(user);
+
+        Item item = new Item(1L, "item", "description", true, userInRep, null);
+        Item itemInRep = itemRepositoryJPA.save(item);
+
+        Booking booking = new Booking(1L, itemInRep, time.plusMinutes(1),
+                time.plusDays(1), userInRep, BookingStatus.WAITING);
+        Booking bookingInRep = bookingRepositoryJPA.save(booking);
+
+        Booking retrievedBooking = entityManager.find(Booking.class, bookingInRep.getId());
+
+        Assertions.assertThat(retrievedBooking).isEqualTo(bookingInRep);
+    }
 
     @Test
     public void testFindAllByOwnerIdAndItemIdAndEndBeforeOrderByStartDesc() {

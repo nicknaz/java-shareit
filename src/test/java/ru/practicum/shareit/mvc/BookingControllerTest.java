@@ -1,6 +1,7 @@
 package ru.practicum.shareit.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,35 +38,62 @@ class BookingControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    public void testCreateBooking() throws Exception {
-        BookingDtoRequest bookingDtoRequest = new BookingDtoRequest();
-        bookingDtoRequest.setItemId(1L);
-        bookingDtoRequest.setStart(LocalDateTime.now().plusMinutes(10));
-        bookingDtoRequest.setEnd(LocalDateTime.now().plusHours(2));
-        bookingDtoRequest.setStatus(BookingStatus.WAITING);
+    private BookingDto bookingDto1;
 
-        User user = User.builder()
+    private BookingDto bookingDto2;
+
+    private User user;
+
+    private User booker;
+
+    private User owner;
+
+    private Item item;
+
+    private BookingDtoRequest bookingDtoRequest;
+
+    @BeforeEach
+    void setUp() {
+        bookingDto1 = new BookingDto();
+        bookingDto1.setId(1L);
+        bookingDto1.setItem(new Item());
+        bookingDto1.setStart(LocalDateTime.now());
+        bookingDto1.setEnd(LocalDateTime.now().plusHours(2));
+        bookingDto1.setBooker(new User());
+        bookingDto1.setStatus(BookingStatus.WAITING);
+
+        bookingDto2 = new BookingDto();
+        bookingDto2.setId(2L);
+        bookingDto2.setItem(new Item());
+        bookingDto2.setStart(LocalDateTime.now());
+        bookingDto2.setEnd(LocalDateTime.now().plusHours(3));
+        bookingDto2.setBooker(new User());
+        bookingDto2.setStatus(BookingStatus.APPROVED);
+
+        user = User.builder()
                 .id(1L)
                 .name("Bob")
                 .email("email@gmail.com")
                 .build();
 
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(1L);
-        bookingDto.setItem(Item.builder()
-                .name("name")
-                .description("fve")
-                .owner(user)
-                .available(true)
-                .id(1L)
-                .build());
-        bookingDto.setStart(LocalDateTime.now());
-        bookingDto.setEnd(LocalDateTime.now().plusHours(2));
-        bookingDto.setBooker(user);
-        bookingDto.setStatus(BookingStatus.WAITING);
+        bookingDtoRequest = new BookingDtoRequest();
+        bookingDtoRequest.setItemId(1L);
+        bookingDtoRequest.setStart(LocalDateTime.now().plusMinutes(10));
+        bookingDtoRequest.setEnd(LocalDateTime.now().plusHours(2));
+        bookingDtoRequest.setStatus(BookingStatus.WAITING);
 
-        when(bookingService.create(any(), anyLong())).thenReturn(bookingDto);
+        booker = new User(1L, "booker", "booker@gmail.com");
+
+        owner = new User(2L, "owner", "owner@gmail.com");
+
+        item = new Item(1L, "item", "description", true, owner, null);
+
+    }
+
+    @Test
+    public void testCreateBooking() throws Exception {
+
+        when(bookingService.create(any(), anyLong())).thenReturn(bookingDto1);
 
         mockMvc.perform(post("/bookings")
                 .header("X-Sharer-User-Id", 2L)
@@ -82,15 +110,8 @@ class BookingControllerTest {
 
     @Test
     public void testChangeStatus() throws Exception {
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(1L);
-        bookingDto.setItem(new Item());
-        bookingDto.setStart(LocalDateTime.now());
-        bookingDto.setEnd(LocalDateTime.now().plusHours(2));
-        bookingDto.setBooker(new User());
-        bookingDto.setStatus(BookingStatus.APPROVED);
-
-        when(bookingService.changeStatus(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
+        bookingDto1.setStatus(BookingStatus.APPROVED);
+        when(bookingService.changeStatus(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto1);
 
         mockMvc.perform(patch("/bookings/{bookingId}", 1L)
                 .header("X-Sharer-User-Id", 1L)
@@ -106,15 +127,7 @@ class BookingControllerTest {
 
     @Test
     public void testFindById() throws Exception {
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(1L);
-        bookingDto.setItem(new Item());
-        bookingDto.setStart(LocalDateTime.now());
-        bookingDto.setEnd(LocalDateTime.now().plusHours(2));
-        bookingDto.setBooker(new User());
-        bookingDto.setStatus(BookingStatus.WAITING);
-
-        when(bookingService.findById(anyLong(), anyLong())).thenReturn(bookingDto);
+        when(bookingService.findById(anyLong(), anyLong())).thenReturn(bookingDto1);
 
         mockMvc.perform(get("/bookings/{bookingId}", 1L)
                 .header("X-Sharer-User-Id", 1L))
@@ -129,22 +142,6 @@ class BookingControllerTest {
 
     @Test
     public void testFindAllBookings() throws Exception {
-        BookingDto bookingDto1 = new BookingDto();
-        bookingDto1.setId(1L);
-        bookingDto1.setItem(new Item());
-        bookingDto1.setStart(LocalDateTime.now());
-        bookingDto1.setEnd(LocalDateTime.now().plusHours(2));
-        bookingDto1.setBooker(new User());
-        bookingDto1.setStatus(BookingStatus.WAITING);
-
-        BookingDto bookingDto2 = new BookingDto();
-        bookingDto2.setId(2L);
-        bookingDto2.setItem(new Item());
-        bookingDto2.setStart(LocalDateTime.now());
-        bookingDto2.setEnd(LocalDateTime.now().plusHours(3));
-        bookingDto2.setBooker(new User());
-        bookingDto2.setStatus(BookingStatus.APPROVED);
-
         List<BookingDto> bookingList = Arrays.asList(bookingDto1, bookingDto2);
 
         when(bookingService.findAllByBooker(anyLong(), any(), any(), any())).thenReturn(bookingList);
@@ -171,30 +168,11 @@ class BookingControllerTest {
         Integer bookingId = 1;
         Integer userId = 1;
 
-        User booker = new User(1L, "booker", "booker@gmail.com");
 
-        User owner = new User(2L, "owner", "owner@gmail.com");
+        bookingDtoRequest.setStatus(BookingStatus.REJECTED);
+        bookingDto1.setStatus(BookingStatus.REJECTED);
 
-        Item item = new Item(1L, "item", "description", true, owner, null);
-
-        LocalDateTime start = LocalDateTime.now().plusMinutes(1).withNano(000);
-        LocalDateTime end = start.plusDays(1).withNano(000);
-
-        BookingDto bookingDto =  BookingDto.builder().booker(booker).end(end)
-                .start(start).item(item).status(BookingStatus.REJECTED).build();
-
-        BookingDtoRequest bookingResponseDto = BookingDtoRequest
-                .builder()
-                .id(bookingDto.getId())
-                .status(BookingStatus.WAITING)
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .itemId(item.getId())
-                .build();
-
-        bookingResponseDto.setStatus(BookingStatus.REJECTED);
-
-        when(bookingService.changeStatus(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
+        when(bookingService.changeStatus(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto1);
 
         mockMvc.perform(patch("/bookings/{bookingId}?approved=false", bookingId)
                 .header("X-Sharer-User-Id", userId))
@@ -207,28 +185,13 @@ class BookingControllerTest {
     public void shouldBookingsAllReservationOwner() throws Exception {
         Integer userId = 2;
 
-        User booker = new User(1L, "booker", "booker@gmail.com");
-
-        User owner = new User(2L, "owner", "owner@gmail.com");
-
-        Item item = new Item(1L, "item", "description", true, owner, null);
 
         LocalDateTime start = LocalDateTime.now().plusMinutes(1).withNano(000);
         LocalDateTime end = start.plusDays(1).withNano(000);
 
-        BookingDto bookingDto =  BookingDto.builder().booker(booker).end(end).start(start).item(item).build();
-
-        BookingDtoRequest bookingResponseDto = BookingDtoRequest
-                .builder()
-                .id(bookingDto.getId())
-                .status(BookingStatus.WAITING)
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .itemId(item.getId())
-                .build();
 
         when(bookingService.findAllByBooker(anyLong(), any(), anyInt(), anyInt()))
-                .thenReturn(List.of(bookingDto, bookingDto));
+                .thenReturn(List.of(bookingDto1, bookingDto2));
 
         mockMvc.perform(get("/bookings/owner")
                 .header("X-Sharer-User-Id", userId))
