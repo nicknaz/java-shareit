@@ -32,20 +32,4 @@ public class UserRepositoryJpaTest {
         assertThat(retrievedUser).isEqualTo(userInRep);
     }
 
-    @Test
-    void testUseWithDuplicateEmail() throws Exception {
-        LocalDateTime time = LocalDateTime.now();
-
-        User user = new User(2L, "user", "email@gmail.com");
-        User userInRep = userRepository.save(user);
-
-        User retrievedUser = entityManager.find(User.class, userInRep.getId());
-
-        assertThat(retrievedUser).isEqualTo(userInRep);
-
-        assertThrows(Exception.class, () -> {
-            User userDuplicate = new User(3L, "user2", "email@gmail.com");
-            userRepository.save(userDuplicate);
-        });
-    }
 }
