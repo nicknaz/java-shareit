@@ -14,7 +14,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 
 import javax.transaction.Transactional;
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!item.getAvailable()) {
-            throw new ValidationException("Предмет не доступен для бронирования!");
+            throw new InvalidDateException("Предмет не доступен для бронирования!");
         }
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd())
@@ -74,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (booking.getStatus() == BookingStatus.APPROVED) {
-            throw new ValidationException("Бронь уже подтверждена!");
+            throw new InvalidDateException("Бронь уже подтверждена!");
         }
 
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);

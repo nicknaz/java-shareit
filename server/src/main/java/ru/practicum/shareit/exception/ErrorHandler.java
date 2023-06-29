@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ValidationException;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -17,13 +16,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> objectNotFoundedException(final NotFoundedException e) {
         log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
-        return Map.of("exception", e.getMessage());
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleException(final Exception e) {
-        log.debug("Получен статус 400 Bad Request {}", e.getMessage(), e);
         return Map.of("exception", e.getMessage());
     }
 

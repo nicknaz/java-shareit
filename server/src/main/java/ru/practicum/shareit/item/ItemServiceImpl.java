@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
+import ru.practicum.shareit.exception.InvalidDateException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -21,7 +22,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 
 import javax.transaction.Transactional;
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -163,7 +163,7 @@ public class ItemServiceImpl implements ItemService {
                         itemId, BookingStatus.REJECTED, LocalDateTime.now(), PageRequest.of(0, 10));
 
         if (bookingList.size() == 0) {
-            throw new ValidationException("Вы не можете оставлять комментарии под этим предметом," +
+            throw new InvalidDateException("Вы не можете оставлять комментарии под этим предметом," +
                     " так как не бронировали ее");
         }
 
