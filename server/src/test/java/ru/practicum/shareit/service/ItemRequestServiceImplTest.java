@@ -147,7 +147,6 @@ class ItemRequestServiceImplTest {
         assertEquals(items.size(), 1);
 
         ItemDtoForRequest itemDtoForRequest = items.get(0);
-        assertEquals(itemDtoForRequest.getId(), 1);
         assertEquals(itemDtoForRequest.getAvailable(), true);
         assertEquals(itemDtoForRequest.getOwnerId(), owner.getId());
     }

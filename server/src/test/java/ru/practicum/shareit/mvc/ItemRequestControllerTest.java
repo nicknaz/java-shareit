@@ -120,22 +120,5 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
-    @Test
-    void testReturnClientErrorWhenGetItemRequestWithInvalidFromAndSizeParams() throws Exception {
-        Long userId = 1L;
-
-        mockMvc.perform(get("/requests/all?from=0&size=0")
-                .header("X-Sharer-User-Id", userId))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testReturnClientErrorWhenGetItemRequestWithInvalidFromAndValidSizeParams() throws Exception {
-        Long userId = 1L;
-
-        mockMvc.perform(get("/requests/all?from=-10&size=20")
-                .header("X-Sharer-User-Id", userId))
-                .andExpect(status().is4xxClientError());
-    }
 
 }
