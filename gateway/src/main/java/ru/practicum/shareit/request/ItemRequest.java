@@ -12,22 +12,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "requests")
 public class ItemRequest {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_id")
     private Long id;
 
-    @Column
     private String description;
 
-    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
-    @ManyToOne
-    @JoinColumn(name = "requestor", referencedColumnName = "user_id")
     private User requestor;
 }
