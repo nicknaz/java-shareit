@@ -59,9 +59,6 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object>  search(@RequestParam("text") String text) {
         log.info("Search by text={}", text);
-        if (text == null || text.isBlank()) {
-            return null;
-        }
         return itemClient.search(text);
     }
 
