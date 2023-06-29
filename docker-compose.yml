@@ -31,5 +31,5 @@ services:
       - "6541:5432"
     environment:
       - POSTGRES_DB=shareit
-      - POSTGRES_USER=sa
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
