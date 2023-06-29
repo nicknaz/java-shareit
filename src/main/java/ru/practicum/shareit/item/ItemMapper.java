@@ -4,9 +4,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.dto.ItemDtoWithDates;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -20,16 +22,30 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
 
-    public static Item toItem(ItemDto dto, User user) {
+    public static ItemDtoForRequest toItemDtoForReques(Item item) {
+        return ItemDtoForRequest
+                .builder()
+                .id(item.getId())
+                .name(item.getName())
+                .ownerId(item.getOwner().getId())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+                .build();
+    }
+
+    public static Item toItem(ItemDto dto, User user, ItemRequest request) {
         return Item.builder()
                 .id(dto.getId())
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .available(dto.getAvailable())
                 .owner(user)
+                .request(request)
                 .build();
     }
 

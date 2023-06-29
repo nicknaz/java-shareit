@@ -2,14 +2,18 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
+@Validated
 @Slf4j
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -45,16 +49,38 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllByBooker(@RequestHeader(name = "X-Sharer-User-Id") Long bookerId,
-                                            @RequestParam(required = false) State state) {
-        List<BookingDto> result = bookingService.findAllByBooker(bookerId, state != null ? state : State.ALL);
-        log.info("Get all booking by bookerId={}", bookerId);
+                                            @RequestParam(defaultValue = "ALL") String state,
+                                            @RequestParam(name = "from", defaultValue = "0")
+                                            @PositiveOrZero Integer from,
+                                            @RequestParam(name = "size", defaultValue = "10")
+                                            @Positive Integer size) {
+        List<BookingDto> result;
+        State stateFromString;
+        try {
+            stateFromString = Enum.valueOf(State.class, state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Неизвестный state");
+        }
+        result = bookingService.findAllByBooker(bookerId, stateFromString, from, size);
+        log.info("Get all booking by bookerId={} page ={}", bookerId, from);
         return result;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwner(@RequestHeader(name = "X-Sharer-User-Id") Long ownerId,
-                                            @RequestParam(required = false, defaultValue = "ALL") State state) {
-        List<BookingDto> result = bookingService.findAllByOwner(ownerId, state);
+                                            @RequestParam(defaultValue = "ALL") String state,
+                                           @RequestParam(name = "from", defaultValue = "0")
+                                           @PositiveOrZero Integer from,
+                                           @RequestParam(name = "size", defaultValue = "10")
+                                           @Positive Integer size) {
+        List<BookingDto> result;
+        State stateFromString;
+        try {
+            stateFromString = Enum.valueOf(State.class, state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Неизвестный state");
+        }
+        result = bookingService.findAllByOwner(ownerId, stateFromString, from, size);
         log.info("Get all booking by ownerId={}", ownerId);
         return result;
     }

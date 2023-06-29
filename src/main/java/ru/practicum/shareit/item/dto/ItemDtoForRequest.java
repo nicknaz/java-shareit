@@ -1,14 +1,10 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.booking.dto.BookingDtoForItem;
-import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.request.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.List;
 
 @Setter
 @Getter
@@ -16,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemDtoWithDates {
+public class ItemDtoForRequest {
     @NotNull
     @PositiveOrZero
     private long id;
@@ -24,13 +20,12 @@ public class ItemDtoWithDates {
     private String name;
     @NotNull
     @NotBlank
+    private Long ownerId;
+    @NotNull
+    @NotBlank
     private String description;
     @NotNull
     private Boolean available;
-    private ItemRequest request;
 
-    private BookingDtoForItem lastBooking;
-    private BookingDtoForItem nextBooking;
-
-    private List<Comment> comments;
+    private Long requestId;
 }

@@ -1,13 +1,13 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.repository.BookingRepositoryJPA;
-import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundedException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepositoryJPA;
 import ru.practicum.shareit.item.repository.ItemRepositoryJPA;
+import ru.practicum.shareit.request.repository.RequestRepositoryJPA;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 
@@ -23,6 +24,7 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,23 +33,28 @@ public class ItemServiceImpl implements ItemService {
     private BookingRepositoryJPA bookingRepository;
     private UserRepositoryJPA userRepository;
     private CommentRepositoryJPA commentRepository;
+    private RequestRepositoryJPA requestRepository;
 
     @Autowired
     public ItemServiceImpl(ItemRepositoryJPA itemRepository,
                            UserRepositoryJPA userRepository,
                            BookingRepositoryJPA bookingRepository,
-                           CommentRepositoryJPA commentRepository) {
+                           CommentRepositoryJPA commentRepository,
+                           RequestRepositoryJPA requestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
     @Override
     @Transactional
     public ItemDto add(ItemDto item, Long ownerId) {
         User user = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundedException("Пользователь не найден"));
-        return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(item, user)));
+        return ItemMapper.toItemDto(itemRepository.save(
+                ItemMapper.toItem(item, user,
+                        item.getRequestId() != null ? requestRepository.findById(item.getRequestId()).get() : null)));
     }
 
     @Override
@@ -108,7 +115,7 @@ public class ItemServiceImpl implements ItemService {
         Item updItem = itemRepository.findById(id).orElseThrow(() -> new NotFoundedException("Предмет не найден"));
 
         if (updItem.getOwner().getId() != ownerId) {
-            throw new AccessException("Вы не можете изменить эту вещь, так как не вы её владелец!");
+            throw new NotFoundedException("Вы не можете изменить эту вещь, так как не вы её владелец!");
         }
 
         if (item.getName() != null && !item.getName().isBlank()) {
@@ -120,6 +127,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             updItem.setAvailable(item.getAvailable());
         }
+
 
         updItem.setId(id);
         return ItemMapper.toItemDto(itemRepository.save((updItem)));
@@ -142,7 +150,8 @@ public class ItemServiceImpl implements ItemService {
                         .build())
                 .filter(x -> (x.getName().contains(text.toLowerCase())
                         || x.getDescription().contains(text.toLowerCase())))
-                .map(x -> itemRepository.getById(x.getId()))
+                .map(x -> itemRepository.findById(x.getId()).orElse(null))
+                .filter(Objects::nonNull)
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -151,7 +160,7 @@ public class ItemServiceImpl implements ItemService {
     public Comment createComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookingList =
                 bookingRepository.findAllByBookerIdAndItemIdAndStatusNotAndStartBeforeOrderByStartDesc(userId,
-                        itemId, BookingStatus.REJECTED, LocalDateTime.now());
+                        itemId, BookingStatus.REJECTED, LocalDateTime.now(), PageRequest.of(0, 10));
 
         if (bookingList.size() == 0) {
             throw new ValidationException("Вы не можете оставлять комментарии под этим предметом," +
