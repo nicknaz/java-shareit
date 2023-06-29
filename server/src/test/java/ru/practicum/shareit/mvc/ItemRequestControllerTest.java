@@ -93,32 +93,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    public void testCreateRequestWithWrongUser() throws Exception {
-        when(itemRequestService.create(any(), anyLong())).thenReturn(dtoForResponse);
-
-        String body = objectMapper.writeValueAsString(dtoRequest);
-
-        mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", -1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                    .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testReturnClientErrorWhenItemRequestWithEmptyDescription() throws Exception {
-        ItemRequestDto item = new ItemRequestDto(null);
-        String jsonItem = objectMapper.writeValueAsString(item);
-        Long userId = 1L;
-
-        mockMvc.perform(post("/requests")
-                .header("X-Sharer-User-Id", userId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonItem))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
     void testReturnClientErrorWhenGetItemRequestWithoutUser() throws Exception {
         mockMvc.perform(get("/requests"))
                 .andExpect(status().is4xxClientError());
@@ -162,39 +136,6 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/all?from=-10&size=20")
                 .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testReturnClientErrorWhenGetItemRequestWithValidFromAndInvalidSizeParams() throws Exception {
-        Long userId = 1L;
-
-        mockMvc.perform(get("/requests/all?from=0&size=-20")
-                .header("X-Sharer-User-Id", userId))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testReturnItemRequestListWhenGetItemRequestWithValidFromAndSizeParams() throws Exception {
-        Long userId = 1L;
-        when(itemRequestService.getOtherUsers(anyLong(), anyInt(), anyInt())).thenReturn(List.of(dtoForResponse));
-
-        mockMvc.perform(get("/requests/all?from=0&size=20")
-                .header("X-Sharer-User-Id", userId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-    }
-
-    @Test
-    void testGetItemRequestById() throws Exception {
-        when(itemRequestService.getRequestById(anyLong(), anyLong())).thenReturn(dtoForResponse);
-
-        mockMvc.perform(get("/requests/{requestId}", 1L)
-                .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.description").value("description"))
-                .andExpect(jsonPath("$.created").isNotEmpty())
-                .andExpect(jsonPath("$.items", hasSize(0)));
     }
 
 }

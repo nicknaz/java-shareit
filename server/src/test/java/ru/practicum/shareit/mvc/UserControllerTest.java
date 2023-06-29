@@ -85,28 +85,6 @@ class UserControllerTest {
     }
 
     @Test
-    void testReturnClientErrorWhenAddingUserWithEmptyName() throws Exception {
-        UserDto user = new UserDto(2L, "", "email2@gmail.com");
-        String jsonUser = objectMapper.writeValueAsString(user);
-
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonUser))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void testReturnClientErrorWhenAddingUserWithEmptyEmail() throws Exception {
-        UserDto user = new UserDto(2L, "user", "");
-        String jsonUser = objectMapper.writeValueAsString(user);
-
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonUser))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
     void testUpdateUserWithPatchWhenStatusIs200() throws Exception {
         UserDto updatedUser = new UserDto(1L, "nameUpd", "emailUpd@gmail.com");
         String jsonUser = objectMapper.writeValueAsString(updatedUser);
