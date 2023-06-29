@@ -52,7 +52,7 @@ public class BookingClient extends BaseClient {
         return get("/" + bookingId, userId);
     }
 
-    public ResponseEntity<Object> changeStatus(Long ownerId, Long bookingId, boolean approved){
+    public ResponseEntity<Object> changeStatus(Long ownerId, Long bookingId, boolean approved) {
         return patch("/" + bookingId + "?approved=" + approved, ownerId);
     }
 }

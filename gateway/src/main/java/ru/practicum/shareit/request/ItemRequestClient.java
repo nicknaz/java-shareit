@@ -47,7 +47,7 @@ public class ItemRequestClient extends BaseClient {
         return get("/" + requestId, userId);
     }
 
-    public ResponseEntity<Object> changeStatus(Long ownerId, Long bookingId, boolean approved){
+    public ResponseEntity<Object> changeStatus(Long ownerId, Long bookingId, boolean approved) {
         return patch("/" + bookingId + "?approved=" + approved, ownerId);
     }
 }

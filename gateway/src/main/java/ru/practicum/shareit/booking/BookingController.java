@@ -19,9 +19,9 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
 	private BookingClient bookingClient;
-	
+
 	@Autowired
-	public  BookingController(BookingClient bookingClient) {
+	public BookingController(BookingClient bookingClient) {
 		this.bookingClient = bookingClient;
 	}
 
