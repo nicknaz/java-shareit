@@ -18,7 +18,6 @@ import ru.practicum.shareit.item.repository.ItemRepositoryJPA;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepositoryJPA;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,7 +92,7 @@ class BookingServiceImplTest {
         Item item = createItem(user);
         item.setAvailable(false);
         BookingDtoRequest bookingDtoRequest = createBookingDtoRequest(item, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
-        assertThrows(ValidationException.class, () -> bookingService.create(bookingDtoRequest, booker.getId()));
+        assertThrows(InvalidDateException.class, () -> bookingService.create(bookingDtoRequest, booker.getId()));
     }
 
     @Test
@@ -166,7 +165,7 @@ class BookingServiceImplTest {
 
         bookingService.changeStatus(user.getId(), bookingDto.getId(), true);
 
-        assertThrows(ValidationException.class,() -> bookingService.changeStatus(user.getId(), bookingDto.getId(), true));
+        assertThrows(InvalidDateException.class,() -> bookingService.changeStatus(user.getId(), bookingDto.getId(), true));
     }
 
     @Test
