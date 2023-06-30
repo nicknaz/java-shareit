@@ -60,7 +60,7 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object>  search(@RequestParam("text") String text) {
         log.info("Search by text={}", text);
-        if (text == null || text.isBlank()){
+        if (text == null || text.isBlank()) {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         }
         return itemClient.search(text);
