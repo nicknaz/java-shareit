@@ -9,6 +9,7 @@ import ru.practicum.gateway.item.dto.CommentDto;
 import ru.practicum.gateway.item.dto.ItemDto;
 
 import javax.validation.Valid;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/items")
@@ -59,6 +60,9 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object>  search(@RequestParam("text") String text) {
         log.info("Search by text={}", text);
+        if (text == null || text.isBlank()){
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+        }
         return itemClient.search(text);
     }
 
