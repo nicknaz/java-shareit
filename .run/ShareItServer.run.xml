@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ShareItServer" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="ru.practicum.gateway.ShareItServer" />
+    <option name="MAIN_CLASS_NAME" value="ru.practicum.server.ShareItServer" />
     <module name="shareit-server" />
     <extension name="coverage">
       <pattern>
