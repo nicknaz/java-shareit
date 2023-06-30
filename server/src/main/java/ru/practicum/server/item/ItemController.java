@@ -9,7 +9,6 @@ import ru.practicum.server.item.dto.ItemDto;
 import ru.practicum.server.item.dto.ItemDtoWithDates;
 import ru.practicum.server.item.model.Comment;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
